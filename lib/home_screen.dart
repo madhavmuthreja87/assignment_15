@@ -42,7 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FloatingActionButton(
+      body: Center(child: Text("ToDo App")),
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           showNotification();
         },

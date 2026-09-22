@@ -1,16 +1,14 @@
 import 'dart:developer';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:todopushnotification/firebase_api.dart';
-import 'package:todopushnotification/firebase_options.dart';
+
 import 'package:todopushnotification/home_screen.dart';
 
 FlutterLocalNotificationsPlugin notificationsPlugin =
     FlutterLocalNotificationsPlugin();
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // await FirebaseApi().initNotification();
 
@@ -20,7 +18,7 @@ void main() async {
       >()
       ?.requestNotificationsPermission();
   AndroidInitializationSettings androidInitializationSettings =
-      AndroidInitializationSettings("!mipmap/ic_launcher");
+      AndroidInitializationSettings("@mipmap/ic_launcher");
 
   DarwinInitializationSettings iOSinitializationSettings =
       DarwinInitializationSettings(
@@ -30,13 +28,22 @@ void main() async {
         requestSoundPermission: true,
       );
 
-  InitializationSettings initializationSettings = InitializationSettings();
+  InitializationSettings initializationSettings = InitializationSettings(
+    android: androidInitializationSettings,
+    iOS: iOSinitializationSettings,
+  );
 
   bool? initialized = await notificationsPlugin.initialize(
     settings: initializationSettings,
   );
 
   log("Notification: $initialized");
+
+  await notificationsPlugin
+      .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin
+      >()
+      ?.requestNotificationsPermission();
   runApp(MyApp());
 }
 
