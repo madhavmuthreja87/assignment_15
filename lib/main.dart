@@ -4,19 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:todopushnotification/home_screen.dart';
+import 'package:timezone/data/latest.dart' as tzdata;
+import 'package:timezone/timezone.dart' as tz;
 
 FlutterLocalNotificationsPlugin notificationsPlugin =
     FlutterLocalNotificationsPlugin();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  tzdata.initializeTimeZones();
+
+  //set indian timezones
+  tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
   // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // await FirebaseApi().initNotification();
 
-  await notificationsPlugin
+  final androidPlugin = await notificationsPlugin
       .resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin
-      >()
-      ?.requestNotificationsPermission();
+      >();
+
+  await androidPlugin?.requestNotificationsPermission();
+  await androidPlugin?.requestExactAlarmsPermission();
+  await androidPlugin?.canScheduleExactNotifications();
+
   AndroidInitializationSettings androidInitializationSettings =
       AndroidInitializationSettings("@mipmap/ic_launcher");
 
@@ -39,11 +49,6 @@ void main() async {
 
   log("Notification: $initialized");
 
-  await notificationsPlugin
-      .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin
-      >()
-      ?.requestNotificationsPermission();
   runApp(MyApp());
 }
 
