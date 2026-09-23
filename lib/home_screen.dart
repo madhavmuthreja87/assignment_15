@@ -2,8 +2,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
+import 'package:todopushnotification/add_todo.dart';
 import 'package:todopushnotification/main.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:todopushnotification/provider/todo_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -55,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
       scheduledDate: scheduledTime,
       notificationDetails: notificationDetails,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      payload: "notification-payload",
     );
     log("notification scheduled successfully");
 
@@ -94,11 +98,47 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.watch<TodoProvider>();
     return Scaffold(
-      body: Center(child: Text("ToDo App")),
+      appBar: AppBar(title: Text("Todo List"), centerTitle: true),
+      body: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          children: [
+            t.todo.length != 0
+                ? Expanded(
+                    child: Consumer<TodoProvider>(
+                      builder:
+                          (
+                            BuildContext context,
+                            TodoProvider value,
+                            Widget? child,
+                          ) {
+                            return ListView.builder(
+                              itemCount: t.todo.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return ListTile(
+                                  leading: Text(t.todo[index].id),
+                                  title: Text(
+                                    t.todo[index].todoname.toString(),
+                                  ),
+                                  trailing: Text(t.todo[index].time.toString()),
+                                );
+                              },
+                            );
+                          },
+                    ),
+                  )
+                : Text("Empty"),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showNotification();
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddTodo()),
+          );
           // testInstantNotification();
         },
         child: Icon(Icons.notification_add),

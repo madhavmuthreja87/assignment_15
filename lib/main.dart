@@ -2,10 +2,13 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
+import 'package:todopushnotification/add_todo.dart';
 
 import 'package:todopushnotification/home_screen.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:todopushnotification/provider/todo_provider.dart';
 
 FlutterLocalNotificationsPlugin notificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -49,7 +52,7 @@ void main() async {
 
   log("Notification: $initialized");
 
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(create: (_) => TodoProvider(), child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
